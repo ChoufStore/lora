@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head><title>Cart - lora</title>
+<style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+    .cart-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #ddd; }
+    .btn { background: #006BDF; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; width: 100%; }
+    .total { font-size: 1.5rem; font-weight: bold; text-align: right; margin: 20px 0; }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Cart</h1>
+        <div id="cart-items"></div>
+        <div class="total" id="cart-total"></div>
+        <button class="btn" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        function displayCart() {
+            let html = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price * item.quantity;
+                html += `
+                    <div class="cart-item">
+                        <span>${item.name} x${item.quantity}</span>
+                        <span>${item.price * item.quantity} MAD</span>
+                        <button onclick="removeItem(${index})">❌</button>
+                    </div>
+                `;
+            });
+            document.getElementById('cart-items').innerHTML = html || '<p>Cart is empty</p>';
+            document.getElementById('cart-total').innerHTML = 'Total: ' + total + ' MAD';
+        }
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCart();
+        }
+        function checkout() { 
+            if (cart.length === 0) {
+                alert('Cart is empty!');
+                return;
+            }
+            window.location.href = 'checkout.html'; 
+        }
+        displayCart();
+    </script>
+</body>
+</html>
