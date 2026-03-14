@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>lora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: #FFFFFF;
+            color: #1A2B3C;
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.03);
+            border-bottom: 1px solid #E5E9F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #006BDF;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: #1A2B3C;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #F8FAFF 0%, #FFFFFF 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid #E5E9F0;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #1A2B3C;
+            font-weight: 600;
+            letter-spacing: -1px;
+        }
+        
+        .hero p {
+            color: #7393B3;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #E5E9F0;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,107,223,0.1);
+            border-color: #006BDF;
+        }
+        
+        .product-image {
+            height: 240px;
+            background: linear-gradient(135deg, #F8FAFF 0%, #E5E9F0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1A2B3C;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+            color: #006BDF;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: white;
+            color: #006BDF;
+            border: 2px solid #006BDF;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #006BDF;
+            color: white;
+        }
+        
+        .footer {
+            background: #1A2B3C;
+            color: white;
+            text-align: center;
+            padding: 3rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">lora</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="cart.html">Cart</a>
+        </div>
+    </div>
+    
+    <div class="hero">
+        <h1>lora</h1>
+        <p>Premium Moroccan Products</p>
+    </div>
+    
+    <div class="container">
+        <div class="products-grid" id="products-grid">
+            <p style="text-align:center; color:#7393B3;">Loading...</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 lora. All rights reserved.</p>
+    </div>
+
+    <script>
+        fetch('https://firestore.googleapis.com/v1/projects/choufstore-1a66b/databases/(default)/documents/stores/lora/products')
+            .then(response => response.json())
+            .then(data => {
+                const grid = document.getElementById('products-grid');
+                
+                if (data.documents && data.documents.length > 0) {
+                    let html = '';
+                    data.documents.forEach(doc => {
+                        const fields = doc.fields || {};
+                        const name = fields.name?.stringValue || 'Product';
+                        const price = fields.price?.integerValue || '0';
+                        const icon = fields.icon?.stringValue || '🛍️';
+                        
+                        html += `
+                            <div class="product-card">
+                                <div class="product-image">${icon}</div>
+                                <div class="product-info">
+                                    <div class="product-name">${name}</div>
+                                    <div class="product-price">${price} MAD</div>
+                                    <button class="btn" onclick="alert('Added to cart!')">Add to Cart</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    grid.innerHTML = html;
+                } else {
+                    grid.innerHTML = '<p style="text-align:center; color:#7393B3;">No products yet</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('products-grid').innerHTML = '<p style="text-align:center; color:#7393B3;">Error loading products</p>';
+            });
+    </script>
+</body>
+</html>
